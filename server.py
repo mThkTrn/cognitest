@@ -6,7 +6,7 @@ import anthropic
 # Set your Anthropic API key
 client = anthropic.Anthropic(
     # defaults to os.environ.get("ANTHROPIC_API_KEY")
-    api_key="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",
+    api_key="",
 )
 
 def query_claude(prompt):
