@@ -1,0 +1,206 @@
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+<link rel="stylesheet" href="style.css">
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{name}} | Preliminary Assessment</title>
+</head>
+<body>
+  <div class="mycont">
+  <header class="container-fluid bg-primary text-white py-3">
+    <div class="container">
+      <h1 class="display-4">Traumatic Brain Injury Preliminary Assessment</h1>
+      <p class="lead">This is a first screening to identify whether the traumatic brain injury is mild, moderate or severe</p>
+    </div>
+  </header>
+  <main class="container mt-5">
+  <p><a href="/index">Back to Home</a></p>
+    <div id="question-card" class="card mb-5 p-3 text-center">
+      </div>
+    <div id="result" style="display: none;">
+      <h2>Your Results</h2>
+      <p id="result-text"></p>
+    </div>
+  </main>
+  <script>
+  set = {
+    "eyes" : false,
+    "motor" : false,
+    "question" : false
+  }
+
+
+    const questionsData = [
+  { question: "Do their eyes open?",
+    description: "Do their eyes open spontaneously?",
+    type: "eyes",
+    answers: [
+      { text: "Yes", value: 4 },
+      { text: "No", value: 0 },
+    ]
+  },
+  { question: "Do their eyes open?",
+    description: "Ask the subject to open their eyes. Do their eyes open?",
+    type: "eyes",
+    answers: [
+      { text: "Yes", value: 3 },
+      { text: "No", value: 0 },
+    ]
+  },
+  { question: "Do their eyes open?",
+    description: "Apply pressures on the fingertips. Do the eyes open?",
+    type: "eyes",
+    answers: [
+      { text: "Yes", value: 2 },
+      { text: "No", value: 1 },
+    ]
+  },
+  
+  { question: "Do they respond when asked something?",
+    description: "Ask the subject their name and the day of the week; record their response",
+    type: "question",
+    answers: [
+      { text: "They respond clearly and show they are aware", value: 5 },
+      { text: "They respond in a confused manner (e.g. wrong information given)", value: 4 },
+      { text: "They respond comprehensibly, but without meaning", value: 3 },
+      { text: "They respond incomprehensibly and nonverbally", value: 2 },
+      { text: "No response", value: 1 },
+    ]
+  },
+  { question: "Do they demonstrate motor responses?",
+    description: "Ask the subject to move. Do they move?",
+    type: "motor",
+    answers: [
+      { text: "Yes", value: 6 },
+      { text: "No", value: 0 },
+    ]
+  },
+  { question: "Do they demonstrate motor responses?",
+    description: "Apply pressure on the fingertips, do they move?",
+    type: "motor",
+    answers: [
+      { text: "They intentionally move away from point of pressure", value: 5 },
+      { text: "They reflexively move away from point of pressure", value: 4 },
+      { text: "They reflexively flex muscles inwards in response to pressure", value: 2 },
+      { text: "They reflexively extend muscles in reponse to pressure", value: 2 },
+      { text: "No response", value: 1 },
+    ]
+  },
+  { question: "Do pupils respond to light?",
+    description: "Shine a light in the eyes of the subject; record their response, noting if the pupil dilates.",
+    answers: [
+      { text: "Both pupils react to light", value: 0 },
+      { text: "One pupil reacts to light", value: -1 },
+      { text: "Neither pupil reacts to light", value: -2 }
+    ]
+  }
+];
+
+let currentQuestionIndex = 0;
+let score = 0;
+
+function showQuestionCard() {
+  
+
+  const questionData = questionsData[currentQuestionIndex];
+  console.log(currentQuestionIndex, set[questionData.type])
+  if(set[questionData.type]){currentQuestionIndex++; showQuestionCard()}
+  else{
+  const questionCard = document.getElementById('question-card');
+  questionCard.innerHTML = ""; // Clear previous question content
+
+  const questionText = document.createElement('h3');
+  questionText.classList.add('question');
+  questionText.innerText = questionData.question;
+
+  const questionDescription =document.createElement('p');
+  //questionDescription.classList.add('')
+  questionDescription.innerText = questionData.description;
+
+  const answerContainer = document.createElement('div');
+  answerContainer.classList.add('btncont', 'text-center');
+
+  questionData.answers.forEach(answer => {
+    const answerButton = document.createElement('button');
+    answerButton.classList.add('btn', 'btn-primary', 'answer-button');
+    answerButton.innerText = answer.text;
+    answerButton.dataset.value = answer.value;
+    answerButton.addEventListener('click', handleAnswerClick);
+    answerContainer.appendChild(answerButton);
+  });
+
+  questionCard.appendChild(questionText);
+  questionCard.appendChild(questionDescription);
+  questionCard.appendChild(answerContainer);
+  }
+}
+
+function handleAnswerClick(event) {
+  const answerButton = event.target;
+  score += parseInt(answerButton.dataset.value);
+
+  if  (parseInt(answerButton.dataset.value) > 0){
+    console.log("setting true: " + currentQuestionIndex + " " + questionsData[currentQuestionIndex].type + " " + score)
+    set[questionsData[currentQuestionIndex].type] = true
+  }
+
+  currentQuestionIndex++;
+
+  if (currentQuestionIndex < questionsData.length) {
+    showQuestionCard();
+  } else {
+    showResults();
+  }
+}
+
+function showResults() {
+  const questionCard = document.getElementById('question-card');
+  questionCard.style.display = 'none';
+
+  const resultText = document.getElementById('result-text');
+  let severity;
+  if (score >= 13) {
+    severity = 'Mild/None';
+  } else if (score >= 9) {
+    severity = 'Moderate';
+  } else {
+    severity = 'Severe (Seek immediate medical attention)';
+  }
+  resultText.innerHTML = `This assessment suggests a potentially ${severity} Traumatic Brain Injury. Remember, this is not a diagnosis. Please consult a doctor for a proper evaluation and treatment plan.<br><br>
+                          For a more detailed report and test of key brain health signs, go <a href = "/detailed">here</a>`;
+
+  const resultDiv = document.getElementById('result');
+  resultDiv.style.display = 'block';
+}
+
+showQuestionCard(); // Display the first question card
+
+  </script>
+</div>
+
+<style>
+  .footer{
+      text-align: center;
+      color: white;
+      padding: none;
+      margin: none;
+      right: 0;
+      left: 0;
+  }
+</style>
+
+<div class = "footer bg-primary">
+<p class = "lead">(c) Madhavendra Thakur, 2024</p><br>
+<small>Medical data based on modeled figures</small>
+
+</div>
+</body>
+</html>
